@@ -1,0 +1,89 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Credit Assistant</title>
+    <style>
+        /* CSS styles for the chatbot interface */
+        #chat-container {
+            width: 400px;
+            height: 500px;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            padding: 10px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .user {
+            font-weight: bold;
+            color: blue;
+        }
+
+        .bot {
+            font-weight: bold;
+            color: green;
+        }
+        #credit-assistant-image {
+            width: 100%; /* Full width inside the container */
+            height: auto; /* Keep aspect ratio */
+            margin-bottom: 20px; /* Space between image and chat */
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Credit Assistant</h1>
+    <!-- Image inclusion with full path (for testing) -->
+    <img id="credit-assistant-image" src="/Users/aifora/Desktop/personal_laptop/learning_practice/git_projects/question_answer_chatbot/scripts/templates/chat_bot.jpg">
+    <div id="chat-container"></div>
+    <input type="text" id="user-input" placeholder="Type your message..." />
+    <button id="send-btn">Send</button>
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+    
+        sendBtn.addEventListener('click', sendMessage);
+        
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (userMessage) {
+                displayMessage('user', userMessage);
+                sendMessageToServer(userMessage);
+                userInput.value = '';
+            }
+        }
+        
+        function displayMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.classList.add(sender);
+            messageElement.textContent = `${sender}: ${message}`;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        function sendMessageToServer(message) {
+            fetch('/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: message }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                displayMessage('bot', data.response);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
